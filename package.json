@@ -1,5 +1,5 @@
 {
-  "name": "hash-stamp",
+  "name": "hankogen",
   "version": "1.0.0",
   "main": "index.html",
   "scripts": {
@@ -22,5 +22,6 @@
   "browserslist": [
     "last 1 Chrome versions"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "private": true
 }
