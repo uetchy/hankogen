@@ -4,12 +4,11 @@
   "main": "index.html",
   "scripts": {
     "build": "parcel build index.html",
-    "start": "parcel index.html --open"
+    "start": "parcel index.html --open 'Google Chrome'"
   },
   "dependencies": {
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
-    "core-js": "3",
     "evergreen-ui": "^4.18.3",
     "filenamify": "^4.1.0",
     "imagetracerjs": "^1.2.5",
@@ -18,8 +17,6 @@
     "react-twitter-embed": "^2.0.8"
   },
   "devDependencies": {
-    "@babel/core": "7.6.0",
-    "@babel/preset-env": "^7.6.0",
     "parcel-bundler": "^1.6.1"
   },
   "browserslist": [

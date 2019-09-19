@@ -10,14 +10,12 @@ import './styles.css';
 const [W, H] = [512, 512];
 const [CW, CH] = [W / 2, H / 2].map((d) => Math.floor(d));
 
-const isMobile = '@media screen and (max-width: 800px)';
-
 const Header = styled.header`
   display: flex;
   padding: 16px;
   align-items: center;
 
-  ${isMobile} {
+  @media screen and (max-width: 800px) {
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
@@ -46,8 +44,7 @@ const App = () => {
     setText(e.target.value);
   }
 
-  async function applyText(e) {
-    if (e) e.preventDefault();
+  async function applyText() {
     createStamp(canvasRef.current.getContext('2d'), text, CW, CH, W, H);
     await generateDownloadLink(canvasRef.current);
     setLoading(false);
@@ -142,9 +139,10 @@ async function traceImage(canvas) {
 function fillVertText(ctx, x, y, text, kern = 5) {
   ctx.save();
   const size = 520 / text.length;
+  const blur = Math.ceil(7 / text.length);
   const totalLen = size * text.length - kern * text.length;
   ctx.fillStyle = 'red';
-  ctx.filter = 'blur(4px)';
+  ctx.filter = `blur(${blur}px)`;
   ctx.font = `${size}px serif`;
   let yOffset = y + -1 * (totalLen / 2) - 20;
   for (const i in text) {
