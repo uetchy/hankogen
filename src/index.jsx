@@ -1,11 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ImageTracer from 'imagetracerjs';
+import filenamify from 'filenamify';
+import styled from '@emotion/styled';
 import {Pane, Button, TextInput} from 'evergreen-ui';
+import {TwitterShareButton} from 'react-twitter-embed';
 import './styles.css';
 
 const [W, H] = [512, 512];
 const [CW, CH] = [W / 2, H / 2].map((d) => Math.floor(d));
+
+const isMobile = '@media screen and (max-width: 800px)';
+
+const Header = styled.header`
+  display: flex;
+  padding: 16px;
+  align-items: center;
+
+  ${isMobile} {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+`;
 
 const App = () => {
   const [text, setText] = useDeferredState('志摩', 500);
@@ -42,30 +59,34 @@ const App = () => {
 
   return (
     <Pane>
-      <Pane
-        display="flex"
-        padding={16}
-        background="tint2"
-        borderRadius={3}
-        display="flex"
-        alignItems="center">
-        <TextInput
-          type="text"
-          placeholder="任意の漢字をいれよう"
-          onChange={changeText}
-          flex={1}
-          marginRight={16}
-        />
-        <Button is="a" href={link} download="output.svg" appearance="primary">
+      <Header>
+        <Pane flex={1} display="flex">
+          <TextInput
+            type="text"
+            placeholder="任意の漢字をいれよう"
+            onChange={changeText}
+            flex={1}
+            marginRight={16}
+          />
+        </Pane>
+        <Button
+          is="a"
+          href={link}
+          download={`${filenamify(text)}.svg`}
+          appearance="primary"
+          marginRight="16">
           Download as .svg
         </Button>
-      </Pane>
+      </Header>
       <Pane
         display="flex"
         justifyContent="center"
         paddingBottom={50}
         paddingTop={50}>
         <canvas ref={canvasRef}></canvas>
+      </Pane>
+      <Pane display="flex" justifyContent="center">
+        <TwitterShareButton url="https://hanko.netlify.com" />
       </Pane>
     </Pane>
   );
@@ -119,7 +140,7 @@ function fillVertText(ctx, x, y, text, kern = 5) {
   const size = 520 / text.length;
   const totalLen = size * text.length - kern * text.length;
   ctx.fillStyle = 'red';
-  ctx.filter = 'blur(3px)';
+  ctx.filter = 'blur(4px)';
   ctx.font = `${size}px serif`;
   let yOffset = y + -1 * (totalLen / 2) - 20;
   for (const i in text) {
