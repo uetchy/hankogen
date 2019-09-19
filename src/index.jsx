@@ -2,26 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ImageTracer from 'imagetracerjs';
 import {Pane, Button, TextInput} from 'evergreen-ui';
+import './styles.css';
 
 const [W, H] = [512, 512];
 const [CW, CH] = [W / 2, H / 2].map((d) => Math.floor(d));
-
-function useDeferredState(initialValue = undefined, duration = 1000) {
-  const [response, setResponse] = React.useState(initialValue);
-  const [innerValue, setInnerValue] = React.useState(initialValue);
-
-  React.useEffect(() => {
-    const fn = setTimeout(() => {
-      setResponse(innerValue);
-    }, duration);
-
-    return () => {
-      clearTimeout(fn);
-    };
-  }, [duration, innerValue]);
-
-  return [response, setInnerValue];
-}
 
 const App = () => {
   const [text, setText] = useDeferredState('志摩', 500);
@@ -88,6 +72,23 @@ const App = () => {
 };
 
 ReactDOM.render(<App />, document.querySelector('#app'));
+
+function useDeferredState(initialValue = undefined, duration = 1000) {
+  const [response, setResponse] = React.useState(initialValue);
+  const [innerValue, setInnerValue] = React.useState(initialValue);
+
+  React.useEffect(() => {
+    const fn = setTimeout(() => {
+      setResponse(innerValue);
+    }, duration);
+
+    return () => {
+      clearTimeout(fn);
+    };
+  }, [duration, innerValue]);
+
+  return [response, setInnerValue];
+}
 
 function createStamp(ctx, text, CW, CH, W, H) {
   ctx.clearRect(0, 0, W, H);
