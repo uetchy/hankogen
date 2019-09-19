@@ -1,4 +1,6 @@
 import ImageTracer from 'imagetracerjs';
+import './styles.css';
+
 const log = console.log;
 
 async function main() {
@@ -15,7 +17,7 @@ async function main() {
   ctx.save();
   ctx.fillStyle = 'red';
   ctx.filter = 'blur(3px)';
-  log(h[0]);
+
   for (let i = 0; i < LW; i++) {
     for (let j = 0; j < LH; j++) {
       const f1 = h[0][j];
@@ -74,59 +76,6 @@ async function main() {
   ctx.putImageData(dst, 0, 0);
 }
 
-async function main2() {
-  const canvas = document.getElementById('app');
-  const ctx = canvas.getContext('2d');
-
-  const [W, H] = [512, 512];
-  const [CW, CH] = [W / 2, H / 2].map((d) => Math.floor(d));
-  canvas.width = W;
-  canvas.height = H;
-
-  createStamp(ctx, '志摩', CW, CH, W, H);
-  await generateDownloadLink(canvas);
-
-  document.querySelector('#input').addEventListener('change', async (e) => {
-    const newText = e.target.value;
-    createStamp(ctx, newText, CW, CH, W, H);
-    await generateDownloadLink(canvas);
-  });
-}
-
-main2();
-
-async function generateDownloadLink(canvas) {
-  const svg = await traceImage(canvas);
-  const blob = new Blob([svg], {type: 'image/svg+xml'});
-  const link = URL.createObjectURL(blob);
-  document.querySelector('#save').href = link;
-  document.querySelector('#save').download = 'output.svg';
-}
-
-function createStamp(ctx, text, CW, CH, W, H) {
-  ctx.clearRect(0, 0, W, H);
-  fillVertText(ctx, CW, CH, text);
-  cropWithCircle(ctx, CW, CH);
-  drawStampEdge(ctx, CW, CH);
-  binarizeCanvas(ctx, W, H);
-}
-
-function cropWithCircle(ctx, CW, CH) {
-  ctx.save();
-  ctx.globalCompositeOperation = 'destination-in';
-  ctx.beginPath();
-  ctx.arc(CW, CH, CH, 0, Math.PI * 2);
-  ctx.closePath();
-  ctx.fill();
-  ctx.restore();
-}
-
-async function traceImage(canvas) {
-  const imgdata = ImageTracer.getImgdata(canvas);
-  const svg = ImageTracer.imagedataToSVG(imgdata);
-  return svg;
-}
-
 async function hash(data) {
   const f = data.slice(0, Math.floor(data.length / 2));
   const b = data.slice(Math.floor(data.length / 2));
@@ -141,52 +90,4 @@ async function hash(data) {
     Math.floor(b / 128),
   );
   return [barr, barr2];
-}
-
-function fillVertText(ctx, x, y, text, kern = 5) {
-  ctx.save();
-  const size = 520 / text.length;
-  const totalLen = size * text.length - kern * text.length;
-  ctx.fillStyle = 'red';
-  ctx.filter = 'blur(3px)';
-  ctx.font = `${size}px serif`;
-  let yOffset = y + -1 * (totalLen / 2) - 20;
-  for (const i in text) {
-    yOffset += size - kern;
-    ctx.fillText(text[i], x - size / 2, yOffset);
-  }
-  ctx.restore();
-}
-
-function drawStampEdge(ctx, CW, CH) {
-  ctx.save();
-  ctx.fillStyle = 'red';
-  ctx.filter = 'blur(2px)';
-  ctx.beginPath();
-  ctx.arc(CW, CH, CH - 4, 0, Math.PI);
-  ctx.lineWidth = 3;
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(CW, CH, CH - 4, Math.PI, Math.PI * 2);
-  ctx.lineWidth = 4;
-  ctx.stroke();
-  ctx.restore();
-}
-
-function binarizeCanvas(ctx, w, h) {
-  const src = ctx.getImageData(0, 0, w, h);
-  const dest = ctx.createImageData(w, h);
-
-  for (let i = 0; i < src.data.length; i += 4) {
-    const ret = src.data[i + 3] > 112;
-    if (ret) {
-      dest.data[i] = 255;
-      dest.data[i + 1] = dest.data[i + 2] = 30;
-    } else {
-      dest.data[i] = dest.data[i + 1] = dest.data[i + 2] = 255;
-    }
-    dest.data[i + 3] = 255;
-  }
-
-  ctx.putImageData(dest, 0, 0);
 }
