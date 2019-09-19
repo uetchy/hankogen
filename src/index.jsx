@@ -27,6 +27,7 @@ const Header = styled.header`
 const App = () => {
   const [text, setText] = useDeferredState('志摩', 500);
   const [link, setLink] = React.useState('');
+  const [isLoading, setLoading] = React.useState(true);
   const canvasRef = React.useRef();
 
   React.useEffect(() => {
@@ -41,6 +42,7 @@ const App = () => {
   }, [text]);
 
   function changeText(e) {
+    setLoading(true);
     setText(e.target.value);
   }
 
@@ -48,6 +50,7 @@ const App = () => {
     if (e) e.preventDefault();
     createStamp(canvasRef.current.getContext('2d'), text, CW, CH, W, H);
     await generateDownloadLink(canvasRef.current);
+    setLoading(false);
   }
 
   async function generateDownloadLink(canvas) {
@@ -74,8 +77,9 @@ const App = () => {
           href={link}
           download={`${filenamify(text)}.svg`}
           appearance="primary"
+          isLoading={isLoading}
           marginRight="16">
-          Download as .svg
+          {isLoading ? 'Baking' : 'Download as .svg'}
         </Button>
       </Header>
       <Pane
